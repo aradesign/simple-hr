@@ -1,0 +1,176 @@
+@import 'tailwindcss';
+@import '@fontsource/vazirmatn/400.css';
+@import '@fontsource/vazirmatn/500.css';
+@import '@fontsource/vazirmatn/600.css';
+@import '@fontsource/vazirmatn/700.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Base page background ─── */
+.cyber-bg {
+    background-color: #f1f5f9;
+    background-image:
+        linear-gradient(rgba(8, 145, 178, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(8, 145, 178, 0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+.dark .cyber-bg {
+    background-color: #050510;
+    background-image:
+        linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+}
+
+/* ─── Panels / cards ─── */
+.cyber-panel {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.dark .cyber-panel {
+    background-color: rgba(15, 15, 35, 0.95);
+    border-color: rgba(0, 240, 255, 0.18);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.05);
+}
+
+/* ─── Hero banner ─── */
+.cyber-hero {
+    background: linear-gradient(135deg, rgba(8, 145, 178, 0.08) 0%, rgba(124, 58, 237, 0.06) 50%, rgba(219, 39, 119, 0.04) 100%);
+    border: 1px solid #cbd5e1;
+}
+
+.dark .cyber-hero {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(255, 0, 170, 0.06) 100%);
+    border-color: rgba(0, 240, 255, 0.2);
+}
+
+/* ─── Accent text ─── */
+.text-accent {
+    color: #0e7490;
+}
+
+.dark .text-accent {
+    color: #22d3ee;
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
+}
+
+/* ─── Active sidebar link ─── */
+.cyber-nav-active {
+    background: linear-gradient(90deg, rgba(8, 145, 178, 0.12), rgba(124, 58, 237, 0.06));
+    border-right: 3px solid #0891b2;
+    color: #0e7490;
+    font-weight: 600;
+}
+
+.dark .cyber-nav-active {
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.12), rgba(168, 85, 247, 0.08));
+    border-right-color: #00f0ff;
+    color: #22d3ee;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+/* ─── Form inputs ─── */
+.cyber-input {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+}
+
+.cyber-input::placeholder {
+    color: #94a3b8;
+}
+
+.dark .cyber-input {
+    background-color: rgba(10, 10, 26, 0.9);
+    border-color: rgba(0, 240, 255, 0.2);
+    color: #f1f5f9;
+}
+
+.dark .cyber-input::placeholder {
+    color: #64748b;
+}
+
+.cyber-input:focus {
+    border-color: #0891b2;
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15);
+    outline: none;
+}
+
+.dark .cyber-input:focus {
+    border-color: #00f0ff;
+    box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2), 0 0 12px rgba(0, 240, 255, 0.12);
+}
+
+/* ─── Stat card top accent ─── */
+.stat-cyan  { border-top: 3px solid #0891b2; }
+.stat-blue  { border-top: 3px solid #2563eb; }
+.stat-green { border-top: 3px solid #16a34a; }
+.stat-amber { border-top: 3px solid #d97706; }
+.stat-purple { border-top: 3px solid #7c3aed; }
+.stat-magenta { border-top: 3px solid #db2777; }
+
+.dark .stat-cyan  { border-top-color: #00f0ff; box-shadow: 0 -2px 12px rgba(0, 240, 255, 0.15); }
+.dark .stat-blue  { border-top-color: #3b82f6; box-shadow: 0 -2px 12px rgba(59, 130, 246, 0.15); }
+.dark .stat-green { border-top-color: #39ff14; box-shadow: 0 -2px 12px rgba(57, 255, 20, 0.12); }
+.dark .stat-amber { border-top-color: #f59e0b; box-shadow: 0 -2px 12px rgba(245, 158, 11, 0.12); }
+.dark .stat-purple { border-top-color: #a855f7; box-shadow: 0 -2px 12px rgba(168, 85, 247, 0.15); }
+.dark .stat-magenta { border-top-color: #ff00aa; box-shadow: 0 -2px 12px rgba(255, 0, 170, 0.15); }
+
+/* ─── Subtle glow (dark only) ─── */
+.dark .neon-glow-cyan {
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.35), 0 0 24px rgba(0, 240, 255, 0.1);
+}
+
+.dark .neon-glow-magenta {
+    box-shadow: 0 0 8px rgba(255, 0, 170, 0.35), 0 0 24px rgba(255, 0, 170, 0.1);
+}
+
+/* ─── Scanlines (very subtle, dark only) ─── */
+.dark .cyber-scanlines::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 240, 255, 0.012) 2px,
+        rgba(0, 240, 255, 0.012) 4px
+    );
+}
+
+[x-cloak] { display: none !important; }
+
+.jalali-picker-popup {
+    inset-inline-start: 0;
+}
+
+/* JalaliDatePicker — هماهنگ با تم سایبری */
+jdp-overlay {
+    z-index: 1090 !important;
+}
+
+jdp-container {
+    font-family: var(--font-sans, 'Vazirmatn', sans-serif) !important;
+    border-radius: 0.75rem !important;
+}
+
+.dark jdp-container {
+    background: rgba(15, 15, 35, 0.98) !important;
+    border: 1px solid rgba(34, 211, 238, 0.25) !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 0 24px rgba(0, 240, 255, 0.12) !important;
+}

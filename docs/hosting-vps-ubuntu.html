@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>راهنمای استقرار Leili HR — VPS اوبونتو ۲۲</title>
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/vazirmatn@5.2.8/400.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/vazirmatn@5.2.8/700.min.css" rel="stylesheet">
+    <style>
+        :root { --bg:#f1f5f9; --panel:#fff; --border:#cbd5e1; --text:#0f172a; --muted:#64748b; --accent:#0891b2; --code:#0f172a; --code-text:#e2e8f0; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:'Vazirmatn',sans-serif; background:var(--bg); color:var(--text); line-height:1.85; }
+        .wrap { max-width:900px; margin:0 auto; padding:1.5rem; }
+        h1 { font-size:1.6rem; margin:0 0 .5rem; color:var(--accent); }
+        h2 { font-size:1.15rem; margin:2rem 0 .75rem; border-right:4px solid var(--accent); padding-right:.75rem; }
+        h3 { font-size:1rem; margin:1.25rem 0 .5rem; }
+        p, li { color:var(--text); }
+        .muted { color:var(--muted); }
+        .panel { background:var(--panel); border:1px solid var(--border); border-radius:.75rem; padding:1.25rem; margin:1rem 0; }
+        .warn { background:#fffbeb; border-color:#fcd34d; }
+        .ok { background:#ecfdf5; border-color:#6ee7b7; }
+        pre { background:var(--code); color:var(--code-text); padding:1rem; border-radius:.5rem; overflow:auto; font-size:.85rem; direction:ltr; text-align:left; }
+        code { font-family:ui-monospace,monospace; }
+        ol.steps { padding-right:1.25rem; }
+        ol.steps > li { margin-bottom:1rem; }
+        table { width:100%; border-collapse:collapse; font-size:.9rem; }
+        th, td { border:1px solid var(--border); padding:.5rem .75rem; text-align:right; }
+        th { background:#e2e8f0; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>راهنمای استقرار Leili HR روی VPS</h1>
+    <p class="muted">اوبونتو ۲۲.۰۴ LTS — Nginx — PHP 8.3 — MariaDB — SSL</p>
+
+    <div class="panel ok">
+        <strong>پیش‌نیاز VPS پیشنهادی:</strong> ۱GB RAM (با swap)، ۱ vCore، ۲۵GB دیسک — برای شروع کافی است.
+    </div>
+
+    <h2>۱. اتصال به سرور</h2>
+    <ol class="steps">
+        <li>از پنل VPS آی‌پی و رمز root را بگیرید.</li>
+        <li>از ترمینال لپتاپ وصل شوید:
+            <pre>ssh root@YOUR_SERVER_IP</pre>
+        </li>
+        <li>سیستم را به‌روز کنید:
+            <pre>apt update && apt upgrade -y</pre>
+        </li>
+    </ol>
+
+    <h2>۲. ساخت کاربر deploy (امن‌تر از root)</h2>
+    <pre>adduser deploy
+usermod -aG sudo deploy
+rsync --archive --chown=deploy:deploy ~/.ssh /home/deploy</pre>
+    <p>از این به بعد با <code>ssh deploy@YOUR_SERVER_IP</code> وارد شوید.</p>
+
+    <h2>۳. فعال‌کردن Swap (مهم برای ۱GB RAM)</h2>
+    <pre>fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab</pre>
+
+    <h2>۴. نصب Nginx، PHP 8.3، MariaDB</h2>
+    <pre>sudo apt install -y nginx mariadb-server unzip git curl software-properties-common
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+sudo apt install -y php8.3-fpm php8.3-cli php8.3-mysql php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip php8.3-gd php8.3-bcmath php8.3-intl</pre>
+
+    <h3>امن‌سازی MariaDB</h3>
+    <pre>sudo mysql_secure_installation</pre>
+    <p>دیتابیس و کاربر بسازید:</p>
+    <pre>sudo mysql -u root -p</pre>
+    <pre>CREATE DATABASE leili_hr CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'leili'@'localhost' IDENTIFIED BY 'STRONG_DB_PASSWORD';
+GRANT ALL PRIVILEGES ON leili_hr.* TO 'leili'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;</pre>
+
+    <h2>۵. نصب Composer</h2>
+    <pre>curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+composer --version</pre>
+
+    <h2>۶. دریافت پروژه از GitHub</h2>
+    <pre>sudo mkdir -p /var/www/leili-hr
+sudo chown deploy:deploy /var/www/leili-hr
+cd /var/www/leili-hr
+git clone https://github.com/YOUR_USER/Leili-HR-v2.git .</pre>
+
+    <h2>۷. تنظیم فایل .env</h2>
+    <pre>cp .env.example .env
+nano .env</pre>
+    <table>
+        <tr><th>کلید</th><th>مقدار نمونه</th></tr>
+        <tr><td>APP_ENV</td><td>production</td></tr>
+        <tr><td>APP_DEBUG</td><td>false</td></tr>
+        <tr><td>APP_URL</td><td>https://hr.example.com</td></tr>
+        <tr><td>DB_CONNECTION</td><td>mysql</td></tr>
+        <tr><td>DB_DATABASE</td><td>leili_hr</td></tr>
+        <tr><td>DB_USERNAME</td><td>leili</td></tr>
+        <tr><td>DB_PASSWORD</td><td>رمز دیتابیس</td></tr>
+        <tr><td>SESSION_DRIVER</td><td>database</td></tr>
+        <tr><td>CACHE_STORE</td><td>database</td></tr>
+        <tr><td>QUEUE_CONNECTION</td><td>database</td></tr>
+    </table>
+    <pre>php artisan key:generate</pre>
+
+    <h2>۸. وابستگی‌ها و دیتابیس</h2>
+    <div class="panel warn">فولدر <code>public/build</code> را روی لپتاپ بسازید و push کنید، یا روی سرور Node نصب کنید (برای ۱GB RAM ترجیحاً build روی لپتاپ).</div>
+    <p><strong>روی لپتاپ (قبل از push):</strong></p>
+    <pre>npm ci && npm run build
+git add public/build && git commit -m "build assets"</pre>
+    <p><strong>روی سرور:</strong></p>
+    <pre>composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan db:seed --force
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache</pre>
+    <p>پس از seed، با <code>admin@example.com</code> / <code>password</code> وارد شوید و فوراً رمز را عوض کنید.</p>
+
+    <h2>۹. دسترسی پوشه‌ها</h2>
+    <pre>sudo chown -R deploy:www-data storage bootstrap/cache
+sudo chmod -R ug+rwx storage bootstrap/cache</pre>
+
+    <h2>۱۰. پیکربندی Nginx</h2>
+    <pre>sudo nano /etc/nginx/sites-available/leili-hr</pre>
+    <pre>server {
+    listen 80;
+    server_name hr.example.com;
+    root /var/www/leili-hr/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}</pre>
+    <pre>sudo ln -s /etc/nginx/sites-available/leili-hr /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx</pre>
+
+    <h2>۱۱. SSL رایگان (Let's Encrypt)</h2>
+    <pre>sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d hr.example.com</pre>
+
+    <h2>۱۲. فایروال</h2>
+    <pre>sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw enable
+sudo ufw status</pre>
+
+    <h2>۱۳. Queue Worker (اختیاری — برای SMS و jobها)</h2>
+    <pre>sudo apt install -y supervisor
+sudo nano /etc/supervisor/conf.d/leili-hr-worker.conf</pre>
+    <pre>[program:leili-hr-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/leili-hr/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=deploy
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/leili-hr/storage/logs/worker.log
+stopwaitsecs=3600</pre>
+    <pre>sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start leili-hr-worker:*</pre>
+
+    <h2>۱۴. Cron (زمان‌بندی Laravel)</h2>
+    <pre>crontab -e</pre>
+    <p>این خط را اضافه کنید:</p>
+    <pre>* * * * * cd /var/www/leili-hr && php artisan schedule:run >> /dev/null 2>&1</pre>
+
+    <h2>۱۵. به‌روزرسانی بعدی</h2>
+    <pre>cd /var/www/leili-hr
+git pull
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+sudo supervisorctl restart leili-hr-worker:*</pre>
+
+    <h2>۱۶. import داده‌ها</h2>
+    <p>پس از استقرار، از پنل ادمین:</p>
+    <ul>
+        <li><strong>درخواست‌ها</strong> → Import CSV</li>
+        <li><strong>پرسنل</strong> → Import CSV</li>
+    </ul>
+    <p>فایل‌های واقعی را در مخزن Git قرار ندهید.</p>
+
+    <h2>عیب‌یابی</h2>
+    <table>
+        <tr><th>مشکل</th><th>بررسی</th></tr>
+        <tr><td>خطای ۵۰۰</td><td><code>tail -50 storage/logs/laravel.log</code></td></tr>
+        <tr><td>صفحه سفید</td><td><code>APP_DEBUG=true</code> موقت — بعداً false</td></tr>
+        <tr><td>استایل ندارد</td><td><code>public/build</code> وجود دارد؟</td></tr>
+        <tr><td>خطای دیتابیس</td><td>اطلاعات <code>.env</code> و <code>php artisan migrate</code></td></tr>
+    </table>
+
+    <p class="muted" style="margin-top:2rem;">Leili HR — راهنمای VPS — ۱۴۰۵</p>
+</div>
+</body>
+</html>
