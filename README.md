@@ -33,7 +33,31 @@ php artisan serve
 php artisan test
 ```
 
-## استقرار روی VPS
+## انتشار روی GitHub
+
+مخزن git آماده است. برای push:
+
+```bash
+# روی github.com یک مخزن خالی بسازید (بدون README)
+git remote add origin git@github.com:YOUR_USER/Leili-HR-v2.git
+git push -u origin main
+```
+
+یا با HTTPS:
+
+```bash
+git remote add origin https://github.com/YOUR_USER/Leili-HR-v2.git
+git push -u origin main
+```
+
+قبل از push، assets را بسازید (روی VPS هم لازم است):
+
+```bash
+npm ci && npm run build
+```
+
+فایل `public/build` در gitignore است — یا آن را از ignore خارج کنید و commit کنید، یا روی سرور `npm run build` بزنید.
+
 
 راهنمای کامل فارسی: [`docs/hosting-vps-ubuntu.html`](docs/hosting-vps-ubuntu.html) — فایل را در مرورگر باز کنید.
 
