@@ -142,6 +142,11 @@ class Person extends Model
         return $query->where('lifecycle_status', PersonLifecycleStatus::Employee);
     }
 
+    public function scopeWithoutUserAccount(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('user');
+    }
+
     public function getFullNameAttribute(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

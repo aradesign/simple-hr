@@ -1,6 +1,11 @@
 <x-app-layout title="کاربران">
     <div class="space-y-6">
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">مدیریت کاربران</h1>
+        <div class="flex items-center justify-between gap-4">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">مدیریت کاربران</h1>
+            @can('create', \App\Models\User::class)
+                <x-button href="{{ route('admin.users.create') }}" variant="primary">افزودن کاربر</x-button>
+            @endcan
+        </div>
 
         <x-card>
             <form method="GET" class="flex flex-col sm:flex-row gap-3 mb-6">
@@ -21,6 +26,7 @@
                     <x-slot:head>
                         <th class="px-4 py-3 font-medium">نام</th>
                         <th class="px-4 py-3 font-medium">ایمیل</th>
+                        <th class="px-4 py-3 font-medium">پرسنل مرتبط</th>
                         <th class="px-4 py-3 font-medium">نقش</th>
                         <th class="px-4 py-3 font-medium">دسترسی HR</th>
                         <th class="px-4 py-3 font-medium">عملیات</th>
@@ -29,13 +35,25 @@
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
                             <td class="px-4 py-3">{{ $user->name }}</td>
                             <td class="px-4 py-3">{{ $user->email }}</td>
+                            <td class="px-4 py-3">
+                                @if ($user->person)
+                                    <a href="{{ route('admin.persons.show', $user->person) }}" class="text-cyan-600 hover:underline">
+                                        {{ $user->person->full_name }}
+                                    </a>
+                                @else
+                                    <span class="text-slate-400">—</span>
+                                @endif
+                            </td>
                             <td class="px-4 py-3">{{ $user->role?->label() }}</td>
                             <td class="px-4 py-3"><x-badge :variant="$user->hr_access ? 'success' : 'default'">{{ $user->hr_access ? 'دارد' : 'ندارد' }}</x-badge></td>
                             <td class="px-4 py-3">
-                                <form method="POST" action="{{ route('admin.users.update', $user) }}" class="flex items-center gap-2">
+                                <form method="POST" action="{{ route('admin.users.update', $user) }}" class="flex flex-wrap items-center gap-2">
                                     @csrf @method('PATCH')
                                     <select name="role" class="text-xs rounded border-slate-300 dark:border-slate-600 dark:bg-slate-700 px-2 py-1">
                                         @foreach (\App\Domain\Enums\UserRole::cases() as $role)
+                                            @if ($role === \App\Domain\Enums\UserRole::SuperAdmin && ! auth()->user()->isSuperAdmin())
+                                                @continue
+                                            @endif
                                             <option value="{{ $role->value }}" @selected($user->role === $role)>{{ $role->label() }}</option>
                                         @endforeach
                                     </select>

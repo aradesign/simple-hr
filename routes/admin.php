@@ -66,6 +66,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('departments', DepartmentController::class);
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('users', [UserController::class, 'store'])->name('users.store');
         Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
 
         Route::get('form-fields', [ApplicationFormFieldController::class, 'index'])->name('form-fields.index');

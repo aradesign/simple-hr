@@ -92,7 +92,16 @@ class SmsGatewayService
             ];
         }
 
-        return $this->provider()->testConnection();
+        try {
+            return $this->provider()->testConnection();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return [
+                'success' => false,
+                'message' => 'خطا در اتصال به سرویس پیامک: '.$e->getMessage(),
+            ];
+        }
     }
 
     private function provider(): SmsProviderInterface
