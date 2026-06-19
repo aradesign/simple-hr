@@ -33,7 +33,28 @@ php artisan serve
 php artisan test
 ```
 
-## نصب روی VPS (یک دستور)
+## نصب آفلاین — سرور ایران (بدون GitHub)
+
+اگر سرور فقط به اینترنت ایران دسترسی دارد:
+
+```bash
+# روی لپتاپ — یک دستور: بسته‌سازی + آپلود + نصب
+bash scripts/deploy-from-laptop.sh root@IP_SERVER --domain hr.example.com --db-password 'RAMZ_GHALI'
+```
+
+یا مرحله‌به‌مرحله:
+
+```bash
+# ۱) ساخت بسته (شامل vendor + پروژه)
+bash scripts/build-offline-bundle.sh
+
+# ۲) انتقال و نصب
+bash scripts/deploy-from-laptop.sh root@IP_SERVER --skip-build --domain hr.example.com --db-password 'RAMZ_GHALI'
+```
+
+روی سرور فقط از **مخازن apt ایران** استفاده می‌شود — نیازی به GitHub نیست.
+
+## نصب روی VPS (یک دستور — نیاز به GitHub)
 
 روی سرور Ubuntu 22.04 با SSH:
 
