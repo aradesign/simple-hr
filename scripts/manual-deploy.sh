@@ -4,7 +4,7 @@
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-$HOME/leili-hr}"
-REPO_URL="https://github.com/aradesign/hr-manager-v2.git"
+REPO_URL="https://github.com/aradesign/simple-hr.git"
 
 echo "=== نصب دستی اپلیکیشن ==="
 

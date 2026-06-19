@@ -4,7 +4,7 @@
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/var/www/leili-hr}"
-REPO_URL="${REPO_URL:-https://github.com/aradesign/hr-manager-v2.git}"
+REPO_URL="${REPO_URL:-https://github.com/aradesign/simple-hr.git}"
 DEPLOY_USER="${DEPLOY_USER:-deploy}"
 
 if [[ "${EUID:-0}" -ne 0 ]]; then

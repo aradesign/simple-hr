@@ -33,7 +33,7 @@
 <body>
 <div class="wrap">
     <h1>راهنمای استقرار Leili HR روی VPS</h1>
-    <p class="muted">مخزن: <a href="https://github.com/aradesign/hr-manager-v2">github.com/aradesign/hr-manager-v2</a></p>
+    <p class="muted">مخزن: <a href="https://github.com/aradesign/simple-hr">github.com/aradesign/simple-hr</a></p>
 
     <div class="panel ok">
         <strong>قبل از شروع:</strong> دامنه را به IP سرور وصل کنید (رکورد A در DNS). بدون این، SSL کار نمی‌کند.
@@ -61,8 +61,8 @@
     <h3>قدم ۲ — دریافت اسکریپت نصب</h3>
     <pre>apt update && apt install -y git
 cd /root
-git clone https://github.com/aradesign/hr-manager-v2.git
-cd hr-manager-v2
+git clone https://github.com/aradesign/simple-hr.git
+cd simple-hr
 chmod +x scripts/vps-install.sh</pre>
 
     <h3>قدم ۳ — اجرای نصب</h3>
@@ -120,7 +120,7 @@ EXIT;</pre>
 cd /var/www/leili-hr
 # اگر قبلاً چیزی اینجا بود:
 # rm -rf /var/www/leili-hr/*
-git clone https://github.com/aradesign/hr-manager-v2.git .</pre>
+git clone https://github.com/aradesign/simple-hr.git .</pre>
     <p>بعد از clone باید فایل <code>artisan</code> را ببینید:</p>
     <pre>ls -la artisan composer.json</pre>
 
@@ -161,9 +161,9 @@ chmod -R ug+rwx storage bootstrap/cache</pre>
     <p>گاهی git روی سرور مشکل دارد. به‌جای clone:</p>
     <pre>cd /var/www
 apt install -y unzip wget
-wget -O hr.zip https://github.com/aradesign/hr-manager-v2/archive/refs/heads/main.zip
+wget -O hr.zip https://github.com/aradesign/simple-hr/archive/refs/heads/main.zip
 unzip hr.zip
-mv hr-manager-v2-main leili-hr
+mv simple-hr-main leili-hr
 cd leili-hr</pre>
     <p>بعد از این، از <strong>قدم ۷</strong> روش دستی ادامه دهید (.env و composer و ...).</p>
 

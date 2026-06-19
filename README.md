@@ -39,14 +39,14 @@ php artisan test
 
 ```bash
 # روی github.com یک مخزن خالی بسازید (بدون README)
-git remote add origin git@github.com:aradesign/hr-manager-v2.git
+git remote add origin git@github.com:aradesign/simple-hr.git
 git push -u origin main
 ```
 
 یا با HTTPS:
 
 ```bash
-git remote add origin https://github.com/aradesign/hr-manager-v2.git
+git remote add origin https://github.com/aradesign/simple-hr.git
 git push -u origin main
 ```
 
