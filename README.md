@@ -33,6 +33,28 @@ php artisan serve
 php artisan test
 ```
 
+## نصب روی VPS (یک دستور)
+
+روی سرور Ubuntu 22.04 با SSH:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aradesign/simple-hr/main/scripts/install.sh | sudo bash
+```
+
+اسکریپت به‌صورت تعاملی می‌پرسد: دامنه، رمز دیتابیس، ایمیل/رمز ادمین، SSL.
+
+**نصب غیرتعاملی:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aradesign/simple-hr/main/scripts/install.sh | sudo bash -s -- \
+  --domain=hr.example.com \
+  --db-password='RAMZ_GHALI' \
+  --ssl-email=you@example.com \
+  --yes
+```
+
+جزئیات: [`scripts/install.sh`](scripts/install.sh) — راهنمای HTML: [`docs/hosting-vps-ubuntu.html`](docs/hosting-vps-ubuntu.html)
+
 ## انتشار روی GitHub
 
 مخزن git آماده است. برای push:
@@ -50,16 +72,15 @@ git remote add origin https://github.com/aradesign/simple-hr.git
 git push -u origin main
 ```
 
-قبل از push، assets را بسازید (روی VPS هم لازم است):
+قبل از push (اختیاری — assets از قبل در مخزن است):
 
 ```bash
 npm ci && npm run build
 ```
 
-فایل `public/build` در gitignore است — یا آن را از ignore خارج کنید و commit کنید، یا روی سرور `npm run build` بزنید.
+## استقرار روی VPS
 
-
-راهنمای کامل فارسی: [`docs/hosting-vps-ubuntu.html`](docs/hosting-vps-ubuntu.html) — فایل را در مرورگر باز کنید.
+راهنمای کامل فارسی: [`docs/hosting-vps-ubuntu.html`](docs/hosting-vps-ubuntu.html)
 
 ## داده‌های حساس
 

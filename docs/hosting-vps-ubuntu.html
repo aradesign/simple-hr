@@ -52,27 +52,31 @@
     </div>
 
     <h2 id="fast">روش ۱ — نصب خودکار (پیشنهادی)</h2>
-    <p>با SSH به سرور وصل شوید و این دستورات را <strong>یکی‌یکی</strong> بزنید:</p>
 
-    <h3>قدم ۱ — وصل شدن به سرور</h3>
-    <pre>ssh root@IP_SERVER_SHOMA</pre>
-    <p class="muted">به‌جای IP_SERVER_SHOMA آی‌پی واقعی VPS را بگذارید.</p>
+    <div class="panel ok">
+        <strong>یک دستور — همه‌چیز:</strong> پیش‌نیازها + پروژه + دیتابیس + Nginx + SSL + Worker
+    </div>
 
-    <h3>قدم ۲ — دریافت اسکریپت نصب</h3>
+    <h3>نصب تک‌خطی</h3>
+    <pre>ssh root@IP_SERVER_SHOMA
+curl -fsSL https://raw.githubusercontent.com/aradesign/simple-hr/main/scripts/install.sh | sudo bash</pre>
+    <p>رابط CLI تعاملی می‌پرسد: دامنه، رمز DB، ایمیل/رمز ادمین، SSL.</p>
+
+    <h3>نصب غیرتعاملی</h3>
+    <pre>curl -fsSL https://raw.githubusercontent.com/aradesign/simple-hr/main/scripts/install.sh | sudo bash -s -- \
+  --domain=hr.example.com \
+  --db-password='RAMZ_GHALI' \
+  --admin-email=admin@example.com \
+  --admin-password='password' \
+  --ssl-email=you@example.com \
+  --yes</pre>
+
+    <h3>روش جایگزین — clone و اجرا</h3>
     <pre>apt update && apt install -y git
-cd /root
 git clone https://github.com/aradesign/simple-hr.git
 cd simple-hr
-chmod +x scripts/vps-install.sh</pre>
+sudo bash scripts/install.sh</pre>
 
-    <h3>قدم ۳ — اجرای نصب</h3>
-    <pre>sudo bash scripts/vps-install.sh</pre>
-    <p>از شما می‌پرسد:</p>
-    <ul>
-        <li><strong>دامنه</strong> — مثلاً <code>hr.example.com</code></li>
-        <li><strong>رمز دیتابیس</strong> — یک رمز قوی انتخاب کنید و یادداشت کنید</li>
-        <li><strong>ایمیل SSL</strong> — برای گواهی رایگان (Enter = بدون SSL فعلاً)</li>
-    </ul>
     <p>پایان نصب → بروید به <code>https://دامنه-شما/admin/login</code></p>
 
     <div class="panel warn">
