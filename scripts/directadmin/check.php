@@ -45,6 +45,15 @@ if (is_file($data.'/.env')) {
     $checks[] = ok('DB_DATABASE='.trim($m[1] ?? '?'));
 }
 
+if (is_dir($data.'/bootstrap/cache')) {
+    foreach (glob($data.'/bootstrap/cache/*.php') ?: [] as $f) {
+        $checks[] = bad('حذف کنید: bootstrap/cache/'.basename($f).' (cache لوکال — باعث خطای Collision)');
+    }
+    if (empty(glob($data.'/bootstrap/cache/*.php'))) {
+        $checks[] = ok('bootstrap/cache تمیز');
+    }
+}
+
 foreach (['storage', 'storage/logs', 'bootstrap/cache'] as $rel) {
     $p = $data.'/'.$rel;
     if (! is_dir($p)) {

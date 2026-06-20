@@ -105,6 +105,12 @@ try {
         }
     });
 
+    step('پاکسازی cache', function () use ($laravelRoot) {
+        foreach (glob($laravelRoot.'/bootstrap/cache/*.php') ?: [] as $file) {
+            @unlink($file);
+        }
+    });
+
     step('APP_KEY', function () use ($laravelRoot) {
         artisan($laravelRoot, 'key:generate --force');
     });

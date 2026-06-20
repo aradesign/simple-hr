@@ -26,6 +26,7 @@ rsync -a \
   --exclude 'storage/framework/cache/data/*' \
   --exclude 'storage/framework/sessions/*' \
   --exclude 'storage/framework/views/*' \
+  --exclude 'bootstrap/cache/*.php' \
   --exclude 'database/database.sqlite' \
   --exclude '.cursor' \
   --exclude 'simple-hr-directadmin.zip' \
@@ -37,6 +38,8 @@ touch "$OUT/data/database/database.sqlite"
 (cd "$OUT/data" && composer install --no-dev --optimize-autoloader --no-interaction --no-scripts)
 (cd "$OUT/data" && composer dump-autoload --optimize --no-interaction --no-scripts)
 rm -f "$OUT/data/database/database.sqlite"
+rm -f "$OUT/data/bootstrap/cache/"*.php
+touch "$OUT/data/bootstrap/cache/.gitignore" 2>/dev/null || true
 
 echo "→ public_html..."
 rsync -a \
