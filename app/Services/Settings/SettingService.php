@@ -16,13 +16,21 @@ class SettingService
     public function all(): array
     {
         return Cache::rememberForever(self::CACHE_KEY, function () {
-            $settings = [];
+            try {
+                if (! \Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                    return $this->defaults();
+                }
 
-            foreach (Setting::query()->get() as $setting) {
-                $settings[$setting->group->value][$setting->key] = $this->castValue($setting);
+                $settings = [];
+
+                foreach (Setting::query()->get() as $setting) {
+                    $settings[$setting->group->value][$setting->key] = $this->castValue($setting);
+                }
+
+                return array_replace_recursive($this->defaults(), $settings);
+            } catch (\Throwable) {
+                return $this->defaults();
             }
-
-            return array_replace_recursive($this->defaults(), $settings);
         });
     }
 

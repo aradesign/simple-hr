@@ -53,6 +53,7 @@ cp "$ROOT/.env.hosting.example" "$OUT/data/.env.hosting.example"
 
 SETUP_FILE="$OUT/public_html/setup.php"
 cp "$ROOT/scripts/directadmin/setup.php" "$SETUP_FILE"
+cp "$ROOT/scripts/directadmin/check.php" "$OUT/public_html/check.php"
 if [[ "$(uname)" == "Darwin" ]]; then
   sed -i '' "s/CHANGE_ME_BEFORE_UPLOAD/${SETUP_KEY}/" "$SETUP_FILE"
 else
