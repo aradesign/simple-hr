@@ -27,6 +27,9 @@ require $laravelRoot.'/vendor/autoload.php';
 
 $app = require_once $laravelRoot.'/bootstrap/app.php';
 
+// public_html همان document root است — build و storage اینجا هستند نه data/public
+$app->usePublicPath(__DIR__);
+
 $kernel = $app->make(Kernel::class);
 
 $response = $kernel->handle(

@@ -57,13 +57,25 @@ function link_public_storage(string $laravelRoot): void
     }
 
     if (file_exists($link)) {
-        if (is_dir($link)) {
-            $items = array_diff(scandir($link) ?: [], ['.', '..', '.gitignore']);
-            if ($items !== []) {
-                throw new RuntimeException('public_html/storage از قبل فایل دارد — خالی کنید');
+        if (is_dir($link) && ! is_link($link)) {
+            foreach (scandir($link) ?: [] as $item) {
+                if (in_array($item, ['.', '..', '.gitignore'], true)) {
+                    continue;
+                }
+                $src = $link.'/'.$item;
+                $dest = $target.'/'.$item;
+                if (is_dir($src)) {
+                    if (! is_dir($dest)) {
+                        rename($src, $dest) || throw new RuntimeException("انتقال {$item} به storage/app/public نشد");
+                    }
+                } elseif (is_file($src)) {
+                    @rename($src, $dest);
+                }
             }
             @unlink($link.'/.gitignore');
             @rmdir($link);
+        } elseif (is_link($link)) {
+            return;
         } else {
             @unlink($link);
         }

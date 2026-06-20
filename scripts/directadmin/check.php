@@ -45,6 +45,10 @@ if (is_file($data.'/.env')) {
     $checks[] = ok('DB_DATABASE='.trim($m[1] ?? '?'));
 }
 
+$checks[] = is_file($root.'/build/manifest.json')
+    ? ok('public_html/build/manifest.json موجود')
+    : bad('public_html/build/manifest.json نیست — پوشه build را آپلود کنید');
+
 if (is_dir($data.'/bootstrap/cache')) {
     foreach (glob($data.'/bootstrap/cache/*.php') ?: [] as $f) {
         $checks[] = bad('حذف کنید: bootstrap/cache/'.basename($f).' (cache لوکال — باعث خطای Collision)');
