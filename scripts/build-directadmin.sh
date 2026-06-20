@@ -39,7 +39,14 @@ touch "$OUT/data/database/database.sqlite"
 rm -f "$OUT/data/database/database.sqlite"
 
 echo "→ public_html..."
-rsync -a "$ROOT/public/" "$OUT/public_html/"
+rsync -a \
+  --exclude '.DS_Store' \
+  --exclude 'storage/*' \
+  --exclude 'hot' \
+  "$ROOT/public/" "$OUT/public_html/"
+mkdir -p "$OUT/public_html/storage"
+echo 'storage symlink placeholder' > "$OUT/public_html/storage/.gitignore" 2>/dev/null || true
+touch "$OUT/public_html/storage/.gitignore"
 cp "$ROOT/scripts/directadmin/public_html-index.php" "$OUT/public_html/index.php"
 
 cp "$ROOT/.env.hosting.example" "$OUT/data/.env.hosting.example"
