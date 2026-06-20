@@ -26,6 +26,7 @@ Homestead.yaml
 /build
 /dist
 /sent_to_host.zip
+/simple-hr-directadmin.zip
 /storage/app/private/
 /storage/imports/
 /storage/framework/testing/*.csv
