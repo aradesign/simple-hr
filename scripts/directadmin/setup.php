@@ -27,6 +27,62 @@ function step(string $label, callable $fn): void
     }
 }
 
+function step_warn(string $label, callable $fn): void
+{
+    global $steps;
+    try {
+        $fn();
+        $steps[] = ['ok', $label];
+    } catch (Throwable $e) {
+        $steps[] = ['warn', $label.': '.$e->getMessage()];
+    }
+}
+
+function link_public_storage(string $laravelRoot): void
+{
+    $publicHtml = dirname($laravelRoot).'/public_html';
+    $target = $laravelRoot.'/storage/app/public';
+    $link = $publicHtml.'/storage';
+
+    if (! is_dir($publicHtml)) {
+        throw new RuntimeException('public_html یافت نشد: '.$publicHtml);
+    }
+
+    if (! is_dir($target) && ! mkdir($target, 0775, true)) {
+        throw new RuntimeException('ساخت storage/app/public ممکن نیست');
+    }
+
+    if (is_link($link) && readlink($link) !== false) {
+        return;
+    }
+
+    if (file_exists($link)) {
+        if (is_dir($link)) {
+            $items = array_diff(scandir($link) ?: [], ['.', '..', '.gitignore']);
+            if ($items !== []) {
+                throw new RuntimeException('public_html/storage از قبل فایل دارد — خالی کنید');
+            }
+            @unlink($link.'/.gitignore');
+            @rmdir($link);
+        } else {
+            @unlink($link);
+        }
+    }
+
+    $relativeTarget = '../data/storage/app/public';
+    if (@symlink($relativeTarget, $link)) {
+        return;
+    }
+
+    if (@symlink($target, $link)) {
+        return;
+    }
+
+    throw new RuntimeException(
+        'symlink خودکار نشد. در File Manager: public_html/storage → ../data/storage/app/public'
+    );
+}
+
 function artisan(string $root, string $command): string
 {
     $php = PHP_BINARY ?: 'php';
@@ -91,7 +147,7 @@ try {
     });
 
     step('دسترسی storage', function () use ($laravelRoot) {
-        foreach (['storage', 'storage/logs', 'storage/framework', 'storage/framework/cache', 'bootstrap/cache'] as $dir) {
+        foreach (['storage', 'storage/logs', 'storage/framework', 'storage/framework/cache', 'storage/app', 'storage/app/public', 'bootstrap/cache'] as $dir) {
             $path = $laravelRoot.'/'.$dir;
             if (! is_dir($path) && ! mkdir($path, 0775, true)) {
                 throw new RuntimeException("ساخت پوشه ممکن نیست: {$dir}");
@@ -123,14 +179,8 @@ try {
         artisan($laravelRoot, 'db:seed --force');
     });
 
-    step('storage:link', function () use ($laravelRoot) {
-        try {
-            artisan($laravelRoot, 'storage:link');
-        } catch (Throwable $e) {
-            if (! str_contains($e->getMessage(), 'already exists')) {
-                throw $e;
-            }
-        }
+    step_warn('storage:link (public_html/storage)', function () use ($laravelRoot) {
+        link_public_storage($laravelRoot);
     });
 
     step('cache', function () use ($laravelRoot) {
@@ -150,11 +200,15 @@ try {
 <h1>راه‌اندازی Simple HR</h1>
 <ul>
 <?php foreach ($steps as [$status, $msg]): ?>
-<li style="color:<?= $status === 'ok' ? 'green' : 'red' ?>"><?= nl2br(htmlspecialchars($msg)) ?></li>
+<li style="color:<?= match ($status) { 'ok' => 'green', 'warn' => '#b45309', default => 'red' } ?>"><?= nl2br(htmlspecialchars($msg)) ?></li>
 <?php endforeach; ?>
 </ul>
-<?php if (! $failed && count($steps) > 0): ?>
-<p><strong>موفق.</strong> <a href="/admin/login">ورود به پنل</a></p>
+<?php
+$coreOk = ! $failed;
+$hasWarn = (bool) array_filter($steps, fn ($s) => $s[0] === 'warn');
+?>
+<?php if ($coreOk && count($steps) > 0): ?>
+<p><strong><?= $hasWarn ? 'نصب انجام شد (یک هشدار)' : 'موفق' ?>.</strong> <a href="/admin/login">ورود به پنل</a></p>
 <p>admin@example.com / password — فوراً رمز را عوض کنید.</p>
 <p style="color:red"><strong>setup.php را حذف کنید.</strong></p>
 <?php elseif ($failed): ?>
